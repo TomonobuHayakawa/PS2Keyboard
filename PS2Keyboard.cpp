@@ -48,6 +48,10 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#if defined (ARDUINO_ARCH_SPRESENSE)
+    #define CORE_INT_EVERY_PIN
+#endif
+
 #include "PS2Keyboard.h"
 
 #define BUFFER_SIZE 45
@@ -704,7 +708,11 @@ void PS2Keyboard::begin(uint8_t data_pin, uint8_t irq_pin, const PS2Keymap_t &ma
   head = 0;
   tail = 0;
   if (irq_num < 255) {
+#if defined (ARDUINO_ARCH_SPRESENSE)
+    attachInterrupt(irq_num, ps2interrupt, FALLING, false);
+#else
     attachInterrupt(irq_num, ps2interrupt, FALLING);
+#endif
   }
 }
 

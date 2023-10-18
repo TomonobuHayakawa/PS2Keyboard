@@ -27,8 +27,8 @@
    
 #include <PS2Keyboard.h>
 
-const int DataPin = 8;
-const int IRQpin =  5;
+const int DataPin = 6;
+const int IRQpin =  7;
 
 PS2Keyboard keyboard;
 
