@@ -115,6 +115,39 @@ static inline uint8_t get_scan_code(void)
 // output.  If a non-US keyboard is used, these may need to be modified
 // for the desired output.
 //
+const PROGMEM PS2Keymap_t PS2Keymap_JIS = {
+  // without shift
+    {0, PS2_F9, 0, PS2_F5, PS2_F3, PS2_F1, PS2_F2, PS2_F12, 0, PS2_F10, PS2_F8, PS2_F6, PS2_F4, PS2_TAB, 0/*cana*/, 0,
+     0, 0, 0, 0, 0, 'q', '1', 0, 0, 0, 'z', 's', 'a', 'w', '2', 0,
+     0, 'c', 'x', 'd', 'e', '4', '3', 0, 0, ' ', 'v', 'f', 't', 'r', '5', 0,
+     0, 'n', 'b', 'h', 'g', 'y', '6', 0, 0, 0, 'm', 'j', 'u', '7', '8', 0,
+     0, ',', 'k', 'i', 'o', '0', '9', 0, 0, '.', '/', 'l', ';', 'p', '-', 0,
+     0, 0, ':', 0, '@', '^', 0, 0, PS2_CAPS_LOCK, 0 , PS2_ENTER, '[', 0, ']', 0, 0,
+     0, 0, 0, 0, 0, 0, PS2_BACKSPACE, 0, 0, '1', '\\', '4', '7', 0, 0, 0,
+     '0', '.', '2', '5', '6', '8', PS2_ESC, 0 /*NumLock*/, PS2_F11, '+', '3', '-', '*', '9', PS2_SCROLL, 0,
+     0, 0, 0, PS2_F7 },
+  // with shift
+	{0, PS2_F9, 0, PS2_F5, PS2_F3, PS2_F1, PS2_F2, PS2_F12, 0, PS2_F10, PS2_F8, PS2_F6, PS2_F4, PS2_TAB, 0, 0,
+	 0, 0 /*Lalt*/, 0 /*Lshift*/, 0, 0 /*Lctrl*/, 'Q', '!', 0, 0, 0, 'Z', 'S', 'A', 'W', '"', 0,
+	 0, 'C', 'X', 'D', 'E', '$', '#', 0, 0, ' ', 'V', 'F', 'T', 'R', '%', 0,
+	 0, 'N', 'B', 'H', 'G', 'Y', '&', 0, 0, 0, 'M', 'J', 'U', '\'', '(', 0,
+	 0, '<', 'K', 'I', 'O', 0, ')', 0, 0, '>', '?', 'L', '+', 'P', '=', 0,
+	 0, '_', '*', 0, '`', '~', 0, 0, PS2_CAPS_LOCK, 0 /*Rshift*/, PS2_ENTER, '{', 0, '}', 0, 0,
+	 0, 0, 0, 0, 0, 0, PS2_BACKSPACE, 0, 0, '1', '|', '4', '7', 0, 0, 0,
+	 '0', '.', '2', '5', '6', '8', PS2_ESC, 0 /*NumLock*/,  PS2_F11, '~', '3', '-', '*', '9', PS2_SCROLL, 0,
+	 0, 0, 0, PS2_F7 },
+	1,
+	// with altgr for IchigoJam
+	{0, PS2_F9, 0, PS2_F5, PS2_F3, PS2_F1, PS2_F2, PS2_F12,     0, PS2_F10, PS2_F8, PS2_F6, PS2_F4, PS2_TAB, 0, 0,
+	 0, 0 /*Lalt*/, 0 /*Lshift*/, 0, 0 /*Lctrl*/,  0xfa, 0xe1, 0, 0, 0, 0, 0xfc, 0xea, 0, 0xe2, 0,
+	 0, 0xec, 0, 0xed, 0xee, 0xe4, 0xe3, 0, 0, 0, 0xff, 0xef, 0xfd, 0xfb, 0xe5, 0,
+	 0, 0xf7, 0xeb, 0xf1, 0xf0, 0, 0xe6, 0, 0, 0, 0xf6, 0xf3, 0xfe, 0xe7, 0xe8, 0,
+	 0, 0, 0xf4, 0xf2, 0xf8, 0xe0, 0xe9, 0, 0, 0, 0, 0xf5, 0, 0xf9, '\\', 0,
+     0, 0, 0, 0, 0, 0, 0, 0,0 /*CapsLock*/, 0 /*Rshift*/, PS2_ENTER, '~', 0, '#', 0, 0,
+     0, '|', 0, 0, 0, 0, PS2_BACKSPACE, 0, 0, '1', 0, '4', '7', 0, 0, 0,
+     '0', '.', '2', '5', '6', '8', PS2_ESC, 0 /*NumLock*/, PS2_F11, '+', '3', '-', '*', '9', PS2_SCROLL, 0,
+     0, 0, 0, PS2_F7 }
+};
 
 const PROGMEM PS2Keymap_t PS2Keymap_US = {
   // without shift
@@ -440,6 +473,7 @@ const PROGMEM PS2Keymap_t PS2Keymap_UK = {
 static char get_iso8859_code(void)
 {
 	static uint8_t state=0;
+	static bool caps_lock=true;
 	uint8_t s;
 	char c;
 
@@ -456,7 +490,8 @@ static char get_iso8859_code(void)
 					state &= ~SHIFT_L;
 				} else if (s == 0x59) {
 					state &= ~SHIFT_R;
-				} else if (s == 0x11 && (state & MODIFIER)) {
+//				} else if (s == 0x11 && (state & MODIFIER)) {
+				} else if (s == 0x11) {
 					state &= ~ALTGR;
 				}
 				// CTRL, ALT & WIN keys could be added
@@ -470,8 +505,13 @@ static char get_iso8859_code(void)
 			} else if (s == 0x59) {
 				state |= SHIFT_R;
 				continue;
-			} else if (s == 0x11 && (state & MODIFIER)) {
+//			} else if (s == 0x11 && (state & MODIFIER)) {
+			} else if (s == 0x11) {
 				state |= ALTGR;
+			}
+			if (s == 0x58) {
+				caps_lock = !caps_lock;
+				continue;
 			}
 			c = 0;
 			if (state & MODIFIER) {
@@ -490,6 +530,9 @@ static char get_iso8859_code(void)
 				  case 0x5A: c = PS2_ENTER;       break;
 				  default: break;
 				}
+			} else if ((state & ALTGR) && pgm_read_byte(keymap->uses_altgr) && (state & (SHIFT_L | SHIFT_R))) {
+				if (s < PS2_KEYMAP_SIZE)
+					c = pgm_read_byte(keymap->altgr + s) - 0x60; 	//for IchigoJam
 			} else if ((state & ALTGR) && pgm_read_byte(keymap->uses_altgr)) {
 				if (s < PS2_KEYMAP_SIZE)
 					c = pgm_read_byte(keymap->altgr + s);
@@ -501,6 +544,13 @@ static char get_iso8859_code(void)
 					c = pgm_read_byte(keymap->noshift + s);
 			}
 			state &= ~(BREAK | MODIFIER);
+			if (caps_lock){
+				if (c >= 'A' && c <= 'Z') {
+					c += 'a' - 'A';
+				}else if (c >= 'a' && c <= 'z') {
+					c -= 'a' - 'A';
+				}
+			}
 			if (c) return c;
 		}
 	}
@@ -536,10 +586,12 @@ int PS2Keyboard::read() {
 		} else {
 			result = get_iso8859_code();
 		}
+#ifndef USE_EXTENTION_CODE
 		if (result >= 128) {
 			UTF8next = (result & 0x3F) | 0x80;
 			result = ((result >> 6) & 0x1F) | 0xC0;
 		}
+#endif
 	}
 	if (!result) return -1;
 	return result;

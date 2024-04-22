@@ -34,29 +34,33 @@
 
 #include "utility/int_pins.h"
 
+
+#define USE_EXTENTION_CODE /* For IchigoJam */
+
+
 // Every call to read() returns a single byte for each
 // keystroke.  These configure what byte will be returned
 // for each "special" key.  To ignore a key, use zero.
 #define PS2_TAB				9
 #define PS2_ENTER			13
-#define PS2_BACKSPACE			127
+#define PS2_BACKSPACE		8
 #define PS2_ESC				27
 #define PS2_INSERT			0
 #define PS2_DELETE			127
 #define PS2_HOME			0
 #define PS2_END				0
 #define PS2_PAGEUP			25
-#define PS2_PAGEDOWN			26
-#define PS2_UPARROW			11
-#define PS2_LEFTARROW			8
-#define PS2_DOWNARROW			10
-#define PS2_RIGHTARROW			21
-#define PS2_F1				0
-#define PS2_F2				0
-#define PS2_F3				0
-#define PS2_F4				0
-#define PS2_F5				0
-#define PS2_F6				0
+#define PS2_PAGEDOWN		26
+#define PS2_UPARROW			30
+#define PS2_LEFTARROW		28
+#define PS2_DOWNARROW		31
+#define PS2_RIGHTARROW		29
+#define PS2_F1				5
+#define PS2_F2				6
+#define PS2_F3				4
+#define PS2_F4				12
+#define PS2_F5				3
+#define PS2_F6				11
 #define PS2_F7				0
 #define PS2_F8				0
 #define PS2_F9				0
@@ -64,7 +68,8 @@
 #define PS2_F11				0
 #define PS2_F12				0
 #define PS2_SCROLL			0
-#define PS2_EURO_SIGN			0
+#define PS2_EURO_SIGN		0
+#define PS2_CAPS_LOCK		20
 
 #define PS2_INVERTED_EXCLAMATION	161 // ¡
 #define PS2_CENT_SIGN			162 // ¢
@@ -180,6 +185,7 @@ typedef struct {
 } PS2Keymap_t;
 
 
+extern const PROGMEM PS2Keymap_t PS2Keymap_JIS;
 extern const PROGMEM PS2Keymap_t PS2Keymap_US;
 extern const PROGMEM PS2Keymap_t PS2Keymap_German;
 extern const PROGMEM PS2Keymap_t PS2Keymap_French;
@@ -205,7 +211,7 @@ class PS2Keyboard {
      * setting the pin modes correctly and driving those needed to high.
      * The propably best place to call this method is in the setup routine.
      */
-    static void begin(uint8_t dataPin, uint8_t irq_pin, const PS2Keymap_t &map = PS2Keymap_US);
+    static void begin(uint8_t dataPin, uint8_t irq_pin, const PS2Keymap_t &map = PS2Keymap_JIS);
 
     /**
      * Returns true if there is a char to be read, false if not.
